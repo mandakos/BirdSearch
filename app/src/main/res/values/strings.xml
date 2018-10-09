@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">BirdSearch</string>
+    <string name="search_hint">Etsi lintulajia</string>
+    <string-array name="birds_array">
+    <item>Tähän</item>
+    <item>tulisi</item>
+    <item>listana</item>
+    <item>lintulajien</item>
+    <item>nimet</item>
+    </string-array>
+</resources>
