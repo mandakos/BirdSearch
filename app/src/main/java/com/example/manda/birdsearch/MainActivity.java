@@ -1,8 +1,6 @@
 package com.example.manda.birdsearch;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,30 +11,27 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     Toolbar mToolbar;
     private ProgressDialog pDialog;
     ListView mListView;
     TextView mEmptyView;
+    CustomAdapter adapter;
+
+    // tämän määrittelyn tarvi Logien kirjottamiseen
+    private final String TAG = MainActivity.class.getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,16 +54,25 @@ public class MainActivity extends AppCompatActivity {
         catch (MalformedURLException e) {
         }
 
+        //
+
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                // 1.
-                Toast.makeText(MainActivity.this, adapterView.getItemAtPosition(i).toString(), Toast.LENGTH_SHORT).show();
+
+                Bird thisBird = adapter.getItem(i);
+
+                // Tässä avataan uusi Activity jossa näytetään lajikuvaus
+                //Intent intent = new Intent(this, SecondActivity.class);
+                //intent.putExtra("BIRD", message);
+                //startActivity(intent);
+                Toast.makeText(MainActivity.this, thisBird.getName_latin(), Toast.LENGTH_SHORT).show();
             }
         });
 
         mListView.setEmptyView(mEmptyView);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -88,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                //adapter.getFilter().filter(newText);
+                adapter.getFilter().filter(newText);
                 return true;
             }
         });
@@ -98,10 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     // AsyncTask datan hakemiseen url osoitteesta
-    private class ReadFileTask extends AsyncTask<URL, Void, ArrayList<String>> {
-
-        // tämän määrittelyn tarvi Logien kirjottamiseen
-        private final String TAG = MainActivity.class.getName();
+    private class ReadFileTask extends AsyncTask<URL, Void, ArrayList<Bird>> {
 
         @Override
         protected void onPreExecute() {
@@ -114,10 +115,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected ArrayList<String> doInBackground(URL... urls) {
+        protected ArrayList<Bird> doInBackground(URL... urls) {
 
             // Luodaan lista lintulajien nimille
-            ArrayList<String> speciesList = new ArrayList<>();
+            ArrayList<Bird> speciesList = new ArrayList<>();
 
             try {
                 // parametrinä tuotu url osoite
@@ -143,7 +144,12 @@ public class MainActivity extends AppCompatActivity {
                     // Jaetaan luettu rivi "kolumneihin" jotka on erotettu tabulaattorilla
                     String[] columns = line.split("\t");
                     Log.i(TAG,"Column " + columns[0]);
-                    speciesList.add(columns[0]);
+
+                    // tehdään uusi Bird olio ja lisätään listaan sen nimi
+                    // 0 = latinank. nimi, 1 = lajikuvaus, 2 = author
+                    //speciesList.add(new Bird(columns[0], columns[1], columns[2]));
+                    Bird bird = new Bird(columns[0], columns[1], columns[2]);
+                    speciesList.add(new Bird(columns[0]));
 
                     // Luetaan uusi rivi
                     line = br.readLine();
@@ -164,14 +170,15 @@ public class MainActivity extends AppCompatActivity {
 
 
         @Override
-        protected void onPostExecute(ArrayList<String> result)
+        protected void onPostExecute(ArrayList<Bird> result)
         {
             //super.onPostExecute(result);
 
             // Lisätään haettujen lintulajien lista UI:n listanäkymään
-            final ArrayAdapter<String> arrayAdapter =
-                    new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, result);
-            mListView.setAdapter(arrayAdapter);
+            adapter = new CustomAdapter(MainActivity.this, result);
+            /*final ArrayAdapter<String> arrayAdapter =
+                    new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, result);*/
+            mListView.setAdapter(adapter);
 
             // Suljetaan progressDialog latausnäkymä
             if (pDialog.isShowing()) { pDialog.dismiss(); }
