@@ -14,11 +14,12 @@ tools:context="com.example.manda.birdsearch.MainActivity">
     android:minHeight="?attr/actionBarSize"
     app:theme="@style/ThemeOverlay.AppCompat.Dark" />
 
-<ListView
-    android:id="@+id/list"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_below="@+id/toolbar" />
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="503dp"
+        android:layout_below="@+id/toolbar"
+        android:layout_marginTop="8dp" />
 
 <TextView
     android:id="@+id/emptyView"
