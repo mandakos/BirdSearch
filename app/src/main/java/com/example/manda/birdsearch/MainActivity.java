@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -29,6 +30,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -91,9 +93,9 @@ public class MainActivity extends AppCompatActivity {
                 Bird thisBird = adapter.getItem(i);
 
                 // Tässä avataan uusi Activity jossa näytetään lajikuvaus
-                //Intent intent = new Intent(this, SecondActivity.class);
-                //intent.putExtra("BIRD", message);
-                //startActivity(intent);
+                Intent intent = new Intent(MainActivity.this, BirdView.class);
+                intent.putExtra("BIRD", thisBird);
+                startActivity(intent);
                 Toast.makeText(MainActivity.this, thisBird.getName_latin(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -121,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 adapter.getFilter().filter(newText);
+                //Log.i(TAG,"ADAPTER : " + newText);
                 return true;
             }
         });
@@ -161,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
 
             String line = descriptions.get(i).toString();
             String getArr[] = line.split(",");
-            Log.i(TAG,"getarr: " + getArr[0]);
+            //Log.i(TAG,"getarr: " + getArr[0]);
 
 
             for (int j = 0; j < names.size(); j++) {
@@ -179,10 +182,16 @@ public class MainActivity extends AppCompatActivity {
                     // tee uusi olio Bird
                     if(getArr != null && getArr2 != null){
                         name_latin = getArr2[0].toString();
+                        Log.i(TAG, "NAME latin: " + name_latin);
+
                         description = getArr[1].toString();
+                        Log.i(TAG, "description: " + description);
+
                         author = getArr[2].toString();
+                        Log.i(TAG, "NAME author: " + author);
+
                         name_finnish = getArr2[1].toString();
-                        //Log.i(TAG, "NAME FINNISH: " + name_finnish);
+                        Log.i(TAG, "NAME FINNISH: " + name_finnish);
                         bird = new Bird(name_latin, description, author, name_finnish);
                         speciesList.add(bird);
                         //Log.i(TAG, bird.getName_finnish().toString());

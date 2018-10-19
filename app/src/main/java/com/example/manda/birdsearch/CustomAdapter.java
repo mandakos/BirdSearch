@@ -1,6 +1,7 @@
 package com.example.manda.birdsearch;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 public class CustomAdapter extends BaseAdapter implements Filterable {
 
@@ -36,6 +39,7 @@ public class CustomAdapter extends BaseAdapter implements Filterable {
     @Override
     public Bird getItem(int position) {
         Bird bird = mDisplayedValues.get(position);
+        Log.i(TAG,"Bird: " + bird.getName_finnish());
         return bird;
     }
 
@@ -64,20 +68,32 @@ public class CustomAdapter extends BaseAdapter implements Filterable {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.tvName.setText(mDisplayedValues.get(position).name_finnish);
+        holder.tvName.setText(mDisplayedValues.get(position).getName_latin());
+        //Log.i(TAG,"Bird NIMI: " + mDisplayedValues.get(position).getName_latin());
 
-        /*holder.llContainer.setOnClickListener(new View.OnClickListener() {
+
+        final View finalConvertView = convertView;
+        holder.llContainer.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
 
-                Bird thisBird = (Bird) (mDisplayedValues.get(position));
+                Bird thisBird = mDisplayedValues.get(position);
+
+                String birdname = mDisplayedValues.get(position).getName_latin();
+                String descript = mDisplayedValues.get(position).getDesc();
+
+                //Log.i(TAG,"Bird ACTIVITY: " + mDisplayedValues.get(position).getName_latin());
+
                 // Tässä avataan uusi DescriptionActivity jossa näytetään lajikuvaus
-                //Intent intent = new Intent(this, DescriptionActivity.class);
-                //intent.putExtra("BIRD", message);
-                //startActivity(intent);
-                Toast.makeText(context, thisBird.getName_latin(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(finalConvertView.getContext(), BirdView.class);
+                intent.putExtra("BirdName", birdname);
+                intent.putExtra("BirdDesc", descript);
+                //Log.i(TAG,"Bird ACTIVITY: " + birdname + descript);
+
+                finalConvertView.getContext().startActivity(intent);
+                Toast.makeText(finalConvertView.getContext(), thisBird.getName_latin(), Toast.LENGTH_SHORT).show();
             }
-        });*/
+        });
 
         return convertView;
     }
@@ -89,8 +105,9 @@ public class CustomAdapter extends BaseAdapter implements Filterable {
             @SuppressWarnings("unchecked")
             @Override
             protected void publishResults(CharSequence constraint,FilterResults results) {
-
+                //Log.i(TAG,"Bird data: " + constraint);
                 mDisplayedValues = (ArrayList<Bird>) results.values; // has the filtered values
+                //Log.i(TAG,"Bird data: " + mDisplayedValues);
                 notifyDataSetChanged();  // notifies the data with new filtered values
             }
 
@@ -114,12 +131,17 @@ public class CustomAdapter extends BaseAdapter implements Filterable {
                     // set the Original result to return
                     results.count = mOriginalValues.size();
                     results.values = mOriginalValues;
+                    //Log.i(TAG,"Bird data: " + mOriginalValues.get(0).name_finnish);
+
                 } else {
                     constraint = constraint.toString().toLowerCase();
                     for (int i = 0; i < mOriginalValues.size(); i++) {
-                        String data = mOriginalValues.get(i).name_finnish;
+                        String data = mOriginalValues.get(i).getName_finnish();
+                        Log.i(TAG,"Bird data: " + data);
+                        //Log.i(TAG,"Bird data: " + constraint);
+
                         if (data.toLowerCase().startsWith(constraint.toString())) {
-                            FilteredArrList.add(new Bird(mOriginalValues.get(i).name_finnish));
+                            FilteredArrList.add(new Bird(mOriginalValues.get(i).getName_finnish()));
                         }
                     }
                     // set the Filtered result to return

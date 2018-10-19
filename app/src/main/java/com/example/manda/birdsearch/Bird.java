@@ -30,6 +30,14 @@ public class Bird implements Serializable {
         return name_finnish;
     }
 
+    public String getDesc() {
+        return desc;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
     public void setName_latin(String name_latin) {
 
         this.name_latin = name_latin;
