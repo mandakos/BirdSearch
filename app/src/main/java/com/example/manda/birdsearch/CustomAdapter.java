@@ -64,7 +64,7 @@ public class CustomAdapter extends BaseAdapter implements Filterable {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.tvName.setText(mDisplayedValues.get(position).name_latin);
+        holder.tvName.setText(mDisplayedValues.get(position).name_finnish);
 
         /*holder.llContainer.setOnClickListener(new View.OnClickListener() {
 
@@ -117,9 +117,9 @@ public class CustomAdapter extends BaseAdapter implements Filterable {
                 } else {
                     constraint = constraint.toString().toLowerCase();
                     for (int i = 0; i < mOriginalValues.size(); i++) {
-                        String data = mOriginalValues.get(i).name_latin;
+                        String data = mOriginalValues.get(i).name_finnish;
                         if (data.toLowerCase().startsWith(constraint.toString())) {
-                            FilteredArrList.add(new Bird(mOriginalValues.get(i).name_latin));
+                            FilteredArrList.add(new Bird(mOriginalValues.get(i).name_finnish));
                         }
                     }
                     // set the Filtered result to return
