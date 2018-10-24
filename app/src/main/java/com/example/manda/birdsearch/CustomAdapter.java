@@ -39,7 +39,7 @@ public class CustomAdapter extends BaseAdapter implements Filterable {
     @Override
     public Bird getItem(int position) {
         Bird bird = mDisplayedValues.get(position);
-        Log.i(TAG,"Bird: " + bird.getName_finnish());
+        //Log.i(TAG,"Bird: " + bird.getName_finnish());
         return bird;
     }
 
@@ -50,7 +50,7 @@ public class CustomAdapter extends BaseAdapter implements Filterable {
 
     private class ViewHolder {
         LinearLayout llContainer;
-        TextView tvName,tvPrice;
+        TextView tvName;
     }
 
     @Override
@@ -68,7 +68,7 @@ public class CustomAdapter extends BaseAdapter implements Filterable {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.tvName.setText(mDisplayedValues.get(position).getName_latin());
+        holder.tvName.setText(mDisplayedValues.get(position).getName_finnish());
         //Log.i(TAG,"Bird NIMI: " + mDisplayedValues.get(position).getName_latin());
 
 
@@ -79,8 +79,10 @@ public class CustomAdapter extends BaseAdapter implements Filterable {
 
                 Bird thisBird = mDisplayedValues.get(position);
 
-                String birdname = mDisplayedValues.get(position).getName_latin();
+                String birdname = mDisplayedValues.get(position).getName_finnish();
+                String latinName = mDisplayedValues.get(position).getName_latin();
                 String descript = mDisplayedValues.get(position).getDesc();
+                String author = mDisplayedValues.get(position).getAuthor();
 
                 //Log.i(TAG,"Bird ACTIVITY: " + mDisplayedValues.get(position).getName_latin());
 
@@ -88,10 +90,12 @@ public class CustomAdapter extends BaseAdapter implements Filterable {
                 Intent intent = new Intent(finalConvertView.getContext(), BirdView.class);
                 intent.putExtra("BirdName", birdname);
                 intent.putExtra("BirdDesc", descript);
+                intent.putExtra("BirdLatin", latinName);
+                intent.putExtra("BirdAuthor", author);
                 //Log.i(TAG,"Bird ACTIVITY: " + birdname + descript);
 
                 finalConvertView.getContext().startActivity(intent);
-                Toast.makeText(finalConvertView.getContext(), thisBird.getName_latin(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(finalConvertView.getContext(), thisBird.getName_latin(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -107,7 +111,6 @@ public class CustomAdapter extends BaseAdapter implements Filterable {
             protected void publishResults(CharSequence constraint,FilterResults results) {
                 //Log.i(TAG,"Bird data: " + constraint);
                 mDisplayedValues = (ArrayList<Bird>) results.values; // has the filtered values
-                //Log.i(TAG,"Bird data: " + mDisplayedValues);
                 notifyDataSetChanged();  // notifies the data with new filtered values
             }
 
@@ -137,11 +140,14 @@ public class CustomAdapter extends BaseAdapter implements Filterable {
                     constraint = constraint.toString().toLowerCase();
                     for (int i = 0; i < mOriginalValues.size(); i++) {
                         String data = mOriginalValues.get(i).getName_finnish();
-                        Log.i(TAG,"Bird data: " + data);
+                        //Log.i(TAG,"Bird data: " + data);
                         //Log.i(TAG,"Bird data: " + constraint);
 
                         if (data.toLowerCase().startsWith(constraint.toString())) {
-                            FilteredArrList.add(new Bird(mOriginalValues.get(i).getName_finnish()));
+                            FilteredArrList.add(new Bird(mOriginalValues.get(i).name_latin, mOriginalValues.get(i).desc, mOriginalValues.get(i).author,
+                                    mOriginalValues.get(i).name_finnish));
+                            //Log.i(TAG,"!!!! " +  constraint.toString() +" == " + mOriginalValues.get(i).getName_finnish());
+
                         }
                     }
                     // set the Filtered result to return

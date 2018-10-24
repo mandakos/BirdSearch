@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
+                // Valitusta list itemistä olio:
                 Bird thisBird = adapter.getItem(i);
 
                 // Tässä avataan uusi Activity jossa näytetään lajikuvaus
@@ -122,8 +123,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                // Filtteröi lista kun hakukenttään kirjoitetaan:
                 adapter.getFilter().filter(newText);
-                //Log.i(TAG,"ADAPTER : " + newText);
                 return true;
             }
         });
@@ -131,6 +132,8 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    // Kysytään lupa tallennustilaan kirjoittamiselle
+    // Tämä varalta tässä jos tarvii, ei vielä käytössä
     public  boolean isStoragePermissionGranted() {
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -159,19 +162,21 @@ public class MainActivity extends AppCompatActivity {
         String author = "";
         String name_finnish = "";
 
+        // "puretaan" Asynctaskissa haetut listat niin että voidaan tehdä haetuista tiedoista
+        // Bird luokan olio
+
         for (int i = 0; i < descriptions.size(); i++) {
             //Log.i(TAG, "DESCRIPTIONS: " + names.get(i).toString());
 
             String line = descriptions.get(i).toString();
-            String getArr[] = line.split(",");
+            String getArr[] = line.split("#");
             //Log.i(TAG,"getarr: " + getArr[0]);
-
 
             for (int j = 0; j < names.size(); j++) {
                 //Log.i(TAG, "NAMES: " +names.get(j).toString());
 
                 String line2 = names.get(j).toString();
-                String getArr2[] = line2.split(",");
+                String getArr2[] = line2.split("#");
                 //Log.i(TAG,"getarr2: " + getArr2[0]);
 
 
@@ -182,16 +187,16 @@ public class MainActivity extends AppCompatActivity {
                     // tee uusi olio Bird
                     if(getArr != null && getArr2 != null){
                         name_latin = getArr2[0].toString();
-                        Log.i(TAG, "NAME latin: " + name_latin);
+                        //Log.i(TAG, "NAME latin: " + name_latin);
 
                         description = getArr[1].toString();
-                        Log.i(TAG, "description: " + description);
+                        //Log.i(TAG, "description: " + description);
 
                         author = getArr[2].toString();
-                        Log.i(TAG, "NAME author: " + author);
+                        //Log.i(TAG, "NAME author: " + author);
 
                         name_finnish = getArr2[1].toString();
-                        Log.i(TAG, "NAME FINNISH: " + name_finnish);
+                        //Log.i(TAG, "NAME FINNISH: " + name_finnish);
                         bird = new Bird(name_latin, description, author, name_finnish);
                         speciesList.add(bird);
                         //Log.i(TAG, bird.getName_finnish().toString());
@@ -229,12 +234,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected ArrayList doInBackground(URL... urls) {
 
-            // Luodaan lista lintulajien nimille
-            //ArrayList<Bird> speciesList = new ArrayList<>();
+            // Luodaan lista
             ArrayList<String> txtList = new ArrayList<>();
-            /*String latinName = "";
-            String description = "";
-            String author = "";*/
             String descriptions = "";
 
             try {
@@ -260,11 +261,11 @@ public class MainActivity extends AppCompatActivity {
 
                     // Jaetaan luettu rivi "kolumneihin" jotka on erotettu tabulaattorilla
                     String[] columns = line.split("\t");
-                    /*latinName = columns[0]; // latinankielinen nimi
-                    description = columns[1]; // lajikuvaus
-                    author = columns[2]; // author*/
-                    descriptions = columns[0] +","+ columns[1] +","+ columns[2];
-                    //Log.i(TAG,"Column " + columns[0]);
+                    String latinName = columns[0]; // latinankielinen nimi
+                    String description = columns[1]; // lajikuvaus
+                    String author = columns[2]; // author
+                    descriptions = latinName + "#" + description +"#"+ author;
+                    //Log.i(TAG,"Get .txt: " + descriptions);
 
                     txtList.add(descriptions);
 
@@ -324,9 +325,11 @@ public class MainActivity extends AppCompatActivity {
 
                         while ((line = r.readLine()) != null) {
                             String[] row = line.split(",");
+                            //Log.i(TAG,"ZIP LINE " + line);
                             names[0] = row[1]; // latinankielinen nimi
                             names[1] = row[2]; // suomenkileinen nimi
-                            addNames = names[0] +","+ names[1];
+                            addNames = names[0] + "#" + names[1];
+                            //Log.i(TAG,"Get .zip: " + addNames);
                             csv_list.add(addNames);
 
                         }
@@ -347,14 +350,10 @@ public class MainActivity extends AppCompatActivity {
         {
             super.onPostExecute(result);
 
-            // Lisätään haettujen lintulajien lista UI:n listanäkymään
-            //adapter = new CustomAdapter(MainActivity.this, result);
-            /*final ArrayAdapter<String> arrayAdapter =
-                    new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, result);*/
-            //mListView.setAdapter(adapter);
-
-
             ArrayList<String> names = getZip(zipURL);
+
+            Log.i(TAG,"names and result: " + names + ", " + result);
+
             addBird(names, result);
 
             // Suljetaan progressDialog latausnäkymä

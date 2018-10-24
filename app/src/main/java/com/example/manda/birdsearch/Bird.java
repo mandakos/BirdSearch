@@ -15,9 +15,9 @@ public class Bird implements Serializable {
         this.author = author;
     }
 
-    public Bird(String name_latin){
+    public Bird(String name_finnish){
 
-        this.name_latin = name_latin;
+        this.name_latin = name_finnish;
     }
 
     public String getName_latin() {

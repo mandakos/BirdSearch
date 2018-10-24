@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BirdView">
+    android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="368dp"
-        android:layout_height="551dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="20dp"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp">
+        android:padding="20dp">
 
         <TextView
             android:id="@+id/tvLaji"
@@ -24,16 +20,45 @@
             android:textSize="24sp" />
 
         <TextView
-            android:id="@+id/tvKuvaus"
+            android:id="@+id/tvLatin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Kuvaus" />
+            android:text="Latinankielinen nimi"
+            android:textColor="@color/colorPrimaryDark" />
 
         <TextView
-            android:id="@+id/tvAuthor"
+            android:id="@+id/tvKuvaus"
+            android:layout_width="match_parent"
+            android:layout_height="410dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:scrollbars="vertical"
+            android:text="Kuvaus" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp" />
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="0dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:text="Copyright:  "
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/tvAuthor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Author"
+                android:textSize="10sp" />
+
+        </LinearLayout>
+
     </LinearLayout>
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
