@@ -5,12 +5,14 @@ import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -30,17 +32,21 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class MainActivity extends AppCompatActivity {
+
+    SharedPreferences savedData;
+    SharedPreferences.Editor editor;
+    Set<String> fetchZipData;
+
     Toolbar mToolbar;
     private ProgressDialog pDialog;
     ListView mListView;
@@ -65,6 +71,10 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, new String[]{
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         }, REQUEST_CODE);
+
+        SharedPreferences savedData = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = savedData.edit();
+        fetchZipData = savedData.getStringSet("List", null);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -341,6 +351,13 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            // lisää haettu lista sharedpreferenceen, jotta sitä ei tarvitse hakea aina uudestaan
+            Set<String> set = new HashSet<String>();
+            set.addAll(csv_list);
+            editor.putStringSet("List", set);
+            editor.commit();
+
             return csv_list;
         }
 
@@ -350,7 +367,20 @@ public class MainActivity extends AppCompatActivity {
         {
             super.onPostExecute(result);
 
-            ArrayList<String> names = getZip(zipURL);
+            // Zip kansiosta haetaan tiedosto jossa on suomen- ja latinankieliset nimet
+            // Käytetään aiemmin tallennettua dataa jos sellainen löytyy SharedPrefernecestä
+            ArrayList<String> names;
+
+            if(fetchZipData != null) {
+                ArrayList<String> arrayList = new ArrayList<String>();
+
+                for (String str : fetchZipData) arrayList.add(str); // Set<String> -> ArrayList<String>
+
+                names = arrayList;
+            }
+            else {
+                names = getZip(zipURL);
+            }
 
             Log.i(TAG,"names and result: " + names + ", " + result);
 
